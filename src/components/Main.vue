@@ -1,7 +1,12 @@
 <template>
     <main class="d-flex flex-column">
         <Header @search="setTextFilter" @genreFilter="setFilterGenre" :genres="getGenres"/>
-        <div class="container-fluid main-container py-5 flex-grow-1">
+        <div v-if="!isLoaded" class="loading-container flex-grow-1 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-white" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div v-else class="container-fluid main-container py-5 flex-grow-1">
             <div class="row d-flex flex-wrap justify-content-center gap-3">
                 <div class="card flex-shrink-0 col-3 col-md-2 px-0 shadow"
                 v-for="(disc, index) in filteredArray" :key="index">
@@ -35,7 +40,8 @@ export default{
             discs : [],
             filteredList : undefined,
             genreFilter: [],
-            textFilter: ''
+            textFilter: '',
+            isLoaded : false
         }
     },
     beforeMount(){
@@ -48,6 +54,8 @@ export default{
             // handle success
             this.discs = response.data.response
             this.filteredList = this.discs
+            setTimeout(()=>this.isLoaded = true, 1500)
+            
             console.log(response);
         });
     },
@@ -88,6 +96,9 @@ export default{
 <style scoped lang="scss">
     main{
         height: 100vh;
+        .loading-container{
+            background-color: #47b194;
+        }
         .main-container{
             background-color: #447daf;
             .card{
