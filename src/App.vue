@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+
     <Main/>
   </div>
 </template>
@@ -11,7 +12,7 @@ export default {
   name: 'App',
   components: {
     Main
-  }
+  },
 }
 </script>
 

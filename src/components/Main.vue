@@ -1,12 +1,10 @@
 <template>
     <main class="d-flex flex-column">
-        <div class="logo-container bg-light p-3">
-            <img src="./../assets/spotify-logo.png" alt="spotify logo">
-        </div>
+        <Header @search="setTextFilter" @genreFilter="setFilterGenre" :genres="getGenres"/>
         <div class="container-fluid main-container py-5 flex-grow-1">
             <div class="row d-flex flex-wrap justify-content-center gap-3">
                 <div class="card flex-shrink-0 col-3 col-md-2 px-0 shadow"
-                v-for="(disc, index) in discs" :key="index">
+                v-for="(disc, index) in filteredArray" :key="index">
                 <img :src="disc.poster" class="card-img-top shadow" :alt="disc.title">
                 <div class="card-body px-1 pt-1 d-flex flex-column">
                     <h5 class="card-title mt-3">{{disc.title}}</h5>
@@ -25,12 +23,19 @@
 </template>
 
 <script>
+import Header from './Header.vue'
 
 export default{
     name : 'Main',
+    components: {
+        Header
+    },
     data(){
         return {
-            discs : undefined
+            discs : [],
+            filteredList : undefined,
+            genreFilter: [],
+            textFilter: ''
         }
     },
     beforeMount(){
@@ -42,20 +47,47 @@ export default{
         .then((response) => {
             // handle success
             this.discs = response.data.response
+            this.filteredList = this.discs
             console.log(response);
         });
+    },
+    methods:{
+        setTextFilter(searchText){
+            this.textFilter = searchText
+        },
+        setFilterGenre(genre){
+            if(genre === 'all'){
+                this.genreFilter = ''
+            }else{
+                this.genreFilter = genre
+            }    
+        }
+    },
+    computed:{
+        getGenres(){
+            const genreArray = []
+            this.discs.forEach(element => {
+                if(!genreArray.includes(element.genre)){
+                    genreArray.push(element.genre)
+                }
+            });
+            return genreArray
+        },
+        filteredArray(){
+
+            let genreFilteredArray = this.discs.filter(element => element.genre.includes(this.genreFilter));
+            if(this.genreFilter === '')
+                genreFilteredArray = this.discs
+            const textGenreFilteredArray = genreFilteredArray.filter(element => element.title.includes(this.textFilter));
+            return textGenreFilteredArray
+        }
     }
 }
 </script>
 
 <style scoped lang="scss">
     main{
-        .logo-container{ 
-            img{
-                width: 70px;
-                height: 70px;
-            }
-        }
+        height: 100vh;
         .main-container{
             background-color: #447daf;
             .card{
